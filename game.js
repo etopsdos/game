@@ -4,9 +4,11 @@ var game =
 {
 	create:
 	{
-		get canvas ()
+		canvas: function (c)
 		{
+			var c = c || {};
 			var canvas = window.document.createElement ('canvas');
+					canvas.background = c.background || 'transparent';
 					canvas.context = canvas.getContext ('2d');
 
 					canvas.resize = function ()
@@ -19,12 +21,13 @@ var game =
 					{
 						set background (b)
 						{
-							canvas.style.background = b
+							canvas.style.background = b;
 						}
 					}
 
 					game.event.manager = canvas;
 
+					canvas.set.background = c.background;
 					canvas.resize ();
 					window.document.body.appendChild (canvas);
 			return canvas;
@@ -51,6 +54,5 @@ var game =
 
 window.onload = function ()
 {
-	game.canvas = game.create.canvas;
-	game.canvas.set.background = 'black';
+	game.canvas = game.create.canvas ({ background: 'gray' });
 }
