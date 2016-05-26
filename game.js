@@ -14,7 +14,7 @@ var game =
 
 					button.show = function ()
 					{
-
+						button.draw ();
 					}
 
 					button.set =
