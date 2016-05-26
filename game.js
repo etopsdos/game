@@ -12,6 +12,11 @@ var game =
 					button.x = o.x || game.random ();
 					button.y = o.y || game.random ();
 
+					button.draw = function ()
+					{
+
+					}
+
 					button.show = function ()
 					{
 						button.draw ();
