@@ -4,11 +4,42 @@ var game =
 {
 	create:
 	{
-		canvas: function (c)
+		button: function (o)
 		{
-			var c = c || {};
+			var button = o || {};
+					button.id = o.id || game.id++;
+					button.text = o.text || '';
+					button.x = o.x || game.random ();
+					button.y = o.y || game.random ();
+
+					button.show = function ()
+					{
+
+					}
+
+					button.set =
+					{
+						set x (x)
+						{
+							button.x = x;
+							button.show ();
+						},
+
+						set y (y)
+						{
+							button.y = y;
+							button.show ();
+						}
+					}
+
+			return button;
+		},
+
+		canvas: function (o)
+		{
+			var o = o || {};
 			var canvas = window.document.createElement ('canvas');
-					canvas.background = c.background || 'transparent';
+					canvas.background = o.background || 'transparent';
 					canvas.context = canvas.getContext ('2d');
 
 					canvas.resize = function ()
@@ -21,13 +52,14 @@ var game =
 					{
 						set background (b)
 						{
+							canvas.background = b;
 							canvas.style.background = b;
 						}
 					}
 
 					game.event.manager = canvas;
 
-					canvas.set.background = c.background;
+					canvas.set.background = canvas.background;
 					canvas.resize ();
 					window.document.body.appendChild (canvas);
 			return canvas;
@@ -36,7 +68,7 @@ var game =
 
 	event:
 	{
-		list: ['click', 'mousedown', 'mouseup', 'resize'],
+		list: ['click', 'mousedown', 'mousemove', 'mouseup', 'resize'],
 
 		set manager (o)
 		{
@@ -50,7 +82,15 @@ var game =
 			}
 		}
 	}
-}
+},
+
+id: 0,
+
+random: function (a, b, c)
+{
+	var random = Math.random ();
+	return random;
+},
 
 window.onload = function ()
 {
