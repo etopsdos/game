@@ -1,103 +1,60 @@
-var window = window;
-
-var game =
+game =
 {
-	create:
+	canvas:
 	{
-		button: function (o)
+		load: function ()
 		{
-			var button = o || {};
-					button.id = o.id || game.id++;
-					button.text = o.text || '';
-					button.x = o.x || game.random ();
-					button.y = o.y || game.random ();
+			canvas = window.document.createElement ('canvas');
+			canvas.context = canvas.getContext ('2d');
 
-					button.draw = function ()
-					{
+			canvas.resize = function ()
+			{
+				canvas.height = window.innerHeight;
+				canvas.width = window.innerWidth;
+			}
 
-					}
+			delete game.canvas;
+			game.canvas = canvas;
 
-					button.show = function ()
-					{
-						button.draw ();
-					}
+			game.object.canvas = canvas;
 
-					button.set =
-					{
-						set x (x)
-						{
-							button.x = x;
-							button.show ();
-						},
-
-						set y (y)
-						{
-							button.y = y;
-							button.show ();
-						}
-					}
-
-			return button;
-		},
-
-		canvas: function (o)
-		{
-			var o = o || {};
-			var canvas = window.document.createElement ('canvas');
-					canvas.background = o.background || 'transparent';
-					canvas.context = canvas.getContext ('2d');
-
-					canvas.resize = function ()
-					{
-						canvas.height = window.innerHeight;
-						canvas.width = window.innerWidth;
-					}
-
-					canvas.set =
-					{
-						set background (b)
-						{
-							canvas.background = b;
-							canvas.style.background = b;
-						}
-					}
-
-					game.event.manager = canvas;
-
-					canvas.set.background = canvas.background;
-					canvas.resize ();
-					window.document.body.appendChild (canvas);
-			return canvas;
+			canvas.resize ();
+			window.document.body.appendChild (canvas);
 		}
 	},
 
-	event:
+	load: function ()
 	{
-		list: ['click', 'mousedown', 'mousemove', 'mouseup', 'resize'],
+		game.window.load ();
+		game.canvas.load ();
+	},
 
-		set manager (o)
+	object: {},
+
+	update: function (event)
+	{
+		for (id in game.object)
 		{
-			for (var i of game.event.list)
+			for (var method in game.object[id])
 			{
-				if (o[i] != undefined)
+				if (method == event.type)
 				{
-					var f = o[i];
-					window['on' + i] = function (event) { f (event); }
+					console.log (method);
+					game.object[id][method] ();
+					return;
 				}
 			}
 		}
+	},
+
+	window:
+	{
+		load: function ()
+		{
+			window.onload = game.update;
+			window.onresize = game.update;
+		}
 	}
-},
-
-id: 0,
-
-random: function (a, b, c)
-{
-	var random = Math.random ();
-	return random;
-},
-
-window.onload = function ()
-{
-	game.canvas = game.create.canvas ({ background: 'gray' });
 }
+
+window.onload = game.load;
