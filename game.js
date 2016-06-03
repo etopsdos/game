@@ -43,13 +43,22 @@ game =
 			button.draw = function ()
 			{
 				let o = game.get.metric (button);
+				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
 				game.canvas.context.fillRect (o.x, o.y, o.w, o.h);
 			}
 
-			button.mousedown = function ()
+			button.mousedown = function (event)
 			{
-				console.log ('click');
+				game.canvas.context.fillStyle = (button.mousein (event)) ? 'red' : 'black';
+				button.draw ();
 			};
+
+			button.mousein = function (event)
+			{
+				let c = { x: event.x, y: event.y };
+				let o = game.get.metric (button);
+				return ((c.x > o.x) && (c.x < o.x + o.w) && (c.y > o.y) && (c.y < o.y + o.h));
+			}
 
 			button.resize = function ()
 			{
@@ -93,7 +102,7 @@ game =
 				{
 					if (method == event.type)
 					{
-						game.object[id][method] ();
+						game.object[id][method] (event);
 					}
 				}
 			}
