@@ -6,6 +6,7 @@ game =
 		{
 			let canvas = window.document.createElement ('canvas');
 			canvas.context = canvas.getContext ('2d');
+			canvas.font = { face: 'Arial', size: 14 };
 
 			canvas.resize = function ()
 			{
@@ -35,11 +36,18 @@ game =
 		{
 			let button = b || {};
 			button.a = b.a || function () {};
+			button.color = {};
+			button.color.background = b.f0 || 'black';
+			button.color.text = b.t0 || 'white';
 			button.f0 = b.f0 || 'black';
 			button.f1 = b.f1 || 'red';
 			button.h = b.h || 0.5;
 			button.id = b.id || Object.keys (game.object).length;
 			button.lw = b.lw || 10;
+			button.t = b.t || ' ';
+			button.t0 = b.t0 || 'white';
+			button.t1 = b.t1 || 'black';
+			button.tk = b.tk || 0.6;
 			button.w = b.w || 0.5;
 			button.x = b.x || 0.5;
 			button.y = b.y || 0.5;
@@ -57,8 +65,17 @@ game =
 
 			button.draw = function ()
 			{
+				let context = game.canvas.context;
 				let o = game.get.metric (button);
-				game.canvas.context.fillRect (o.x, o.y, o.w, o.h);
+
+				context.fillStyle = button.color.background;
+				context.fillRect (o.x, o.y, o.w, o.h);
+
+				context.fillStyle = button.color.text;
+				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+				context.textAlign = 'center';
+				context.textBaseline = 'middle';
+				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
 			}
 
 			button.mousedown = function (event)
@@ -66,9 +83,11 @@ game =
 				if (button.mousein (event))
 				{
 					button.a ();
-					game.canvas.context.fillStyle = button.f1;
+					button.color.background = button.f1;
+					button.color.text = button.t1;
 				} else {
-					game.canvas.context.fillStyle = button.f0;;
+					button.color.background = button.f0;
+					button.color.text = button.t0;
 				}
 				button.draw ();
 			}
@@ -82,7 +101,8 @@ game =
 
 			button.mouseup = function ()
 			{
-				game.canvas.context.fillStyle = button.f0;
+				button.color.background = button.f0;
+				button.color.text = button.t0;
 				button.draw ();
 			}
 
@@ -98,6 +118,22 @@ game =
 
 	get:
 	{
+		font:
+		{
+			size: function (text, width)
+			{
+				let fs = 8;
+				game.canvas.context.font = fs++ + 'px ' + game.canvas.font.face;
+				let w = game.canvas.context.measureText (text).width;
+				while (w < width)
+				{
+					game.canvas.context.font = fs++ + 'px ' + game.canvas.font.face;
+					w = game.canvas.context.measureText (text).width;
+				}
+				return --fs;
+			}
+		},
+
 		metric: function (o)
 		{
 			let object = {};
@@ -113,9 +149,10 @@ game =
 	{
 		game.window.load ();
 		game.canvas.load ();
-		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, wk: 1, x: 0.7, xk: 0.5, y: 0.5, yk: 0.5 });
-		game.create.button ({ h: 0.1, wk: 1, x: 0.3, xk: 0.5, y: 0.5, yk: 0.5 });
-		game.create.button ({ h: 0.1, wk: 1, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.run ();
+		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, t: 'start', wk: 1, x: 0.7, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ h: 0.1, t: 'start', wk: 2, x: 0.3, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ hk: 2, t: 'start', w: 0.1, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	},
 
 	object:
@@ -177,3 +214,11 @@ game =
 }
 
 window.onload = game.load;
+
+game.run = function ()
+{
+	game.scene.start = function ()
+	{
+
+	}
+}
