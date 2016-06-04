@@ -65,7 +65,8 @@ game =
 				} else {
 					game.canvas.context.fillStyle = button.f0;;
 				}
-			};
+				button.draw ();
+			}
 
 			button.mousein = function (event)
 			{
