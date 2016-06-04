@@ -150,9 +150,6 @@ game =
 		game.window.load ();
 		game.canvas.load ();
 		game.run ();
-		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, t: 'start', wk: 1, x: 0.7, xk: 0.5, y: 0.5, yk: 0.5 });
-		game.create.button ({ h: 0.1, t: 'start', wk: 2, x: 0.3, xk: 0.5, y: 0.5, yk: 0.5 });
-		game.create.button ({ hk: 2, t: 'start', w: 0.1, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	},
 
 	object:
@@ -219,6 +216,7 @@ game.run = function ()
 {
 	game.scene.start = function ()
 	{
-
+		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, t: 'start', wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
+	game.scene.next = 'start';
 }
