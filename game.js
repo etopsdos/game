@@ -34,23 +34,37 @@ game =
 		button: function (b)
 		{
 			let button = b || {};
-			button.h = button.h || 0.5;
-			button.id = button.id || Object.keys (game.object).length;
-			button.w = button.w || 0.5;
-			button.x = button.x || 0.5;
-			button.y = button.y || 0.5;
+			button.a = b.a || function () {};
+			button.f0 = b.f0 || 'black';
+			button.f1 = b.f1 || 'red';
+			button.h = b.h || 0.5;
+			button.id = b.id || Object.keys (game.object).length;
+			button.lw = b.lw || 10;
+			button.w = b.w || 0.5;
+			button.x = b.x || 0.5;
+			button.y = b.y || 0.5;
+
+			button.clear = function ()
+			{
+				let o = game.get.metric (button);
+				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
+			}
 
 			button.draw = function ()
 			{
 				let o = game.get.metric (button);
-				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
 				game.canvas.context.fillRect (o.x, o.y, o.w, o.h);
 			}
 
 			button.mousedown = function (event)
 			{
-				game.canvas.context.fillStyle = (button.mousein (event)) ? 'red' : 'black';
-				button.draw ();
+				if (button.mousein (event))
+				{
+					button.a ();
+					game.canvas.context.fillStyle = button.f1;
+				} else {
+					game.canvas.context.fillStyle = button.f0;;
+				}
 			};
 
 			button.mousein = function (event)
@@ -58,6 +72,12 @@ game =
 				let c = { x: event.x, y: event.y };
 				let o = game.get.metric (button);
 				return ((c.x > o.x) && (c.x < o.x + o.w) && (c.y > o.y) && (c.y < o.y + o.h));
+			}
+
+			button.mouseup = function ()
+			{
+				game.canvas.context.fillStyle = button.f0;
+				button.draw ();
 			}
 
 			button.resize = function ()
@@ -75,10 +95,10 @@ game =
 		metric: function (o)
 		{
 			let object = {};
-			object.h = (o.hk) ? o.hk * o.w * game.canvas.width : o.h * game.canvas.height;
-			object.w = (o.wk) ? o.wk * o.h * game.canvas.height : o.w * game.canvas.width;
-			object.x = (o.xk) ? o.x * game.canvas.width - o.xk * object.w : o.x * game.canvas.width;
-			object.y = (o.yk) ? o.y * game.canvas.height - o.xk * object.h : o.y * game.canvas.height;
+			object.h = (o.hk) ? o.hk * o.w * game.canvas.width >> 0 : o.h * game.canvas.height >> 0;
+			object.w = (o.wk) ? o.wk * o.h * game.canvas.height >> 0 : o.w * game.canvas.width >> 0;
+			object.x = (o.xk) ? o.x * game.canvas.width - o.xk * object.w >> 0 : o.x * game.canvas.width >> 0;
+			object.y = (o.yk) ? o.y * game.canvas.height - o.xk * object.h >> 0 : o.y * game.canvas.height >> 0;
 			return object;
 		}
 	},
@@ -87,7 +107,7 @@ game =
 	{
 		game.window.load ();
 		game.canvas.load ();
-		game.create.button ({ h: 0.1, wk: 1, x: 0.7, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, wk: 1, x: 0.7, xk: 0.5, y: 0.5, yk: 0.5 });
 		game.create.button ({ h: 0.1, wk: 1, x: 0.3, xk: 0.5, y: 0.5, yk: 0.5 });
 		game.create.button ({ h: 0.1, wk: 1, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	},
@@ -120,6 +140,7 @@ game =
 		load: function ()
 		{
 			window.onmousedown = game.update;
+			window.onmousemove = game.update;
 			window.onmouseup = game.update;
 			window.onload = game.update;
 			window.onresize = game.update;
