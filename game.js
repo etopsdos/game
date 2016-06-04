@@ -50,6 +50,11 @@ game =
 				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
 			}
 
+			button.destroy = function ()
+			{
+				button.clear ();
+			}
+
 			button.draw = function ()
 			{
 				let o = game.get.metric (button);
@@ -115,6 +120,20 @@ game =
 
 	object:
 	{
+		set destroy (id)
+		{
+			if (game.object[id])
+			{
+				if (game.object[id].destroy)
+				{
+					game.object[id].destroy ();
+					delete game.object[id];
+				} else {
+					delete game.object[id];
+				}
+			}
+		},
+
 		update: function (event)
 		{
 			for (let id in game.object)
@@ -127,6 +146,14 @@ game =
 					}
 				}
 			}
+		}
+	},
+
+	scene:
+	{
+		set next (name)
+		{
+			game.scene[name] ();
 		}
 	},
 
