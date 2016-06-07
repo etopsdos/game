@@ -44,6 +44,7 @@ game =
 			button.h = b.h || 0.5;
 			button.id = b.id || Object.keys (game.object).length;
 			button.lw = b.lw || 10;
+			button.over = false;
 			button.t = b.t || ' ';
 			button.t0 = b.t0 || 'white';
 			button.t1 = b.t1 || 'black';
@@ -65,6 +66,7 @@ game =
 
 			button.draw = function ()
 			{
+				button.clear ();
 				let context = game.canvas.context;
 				let o = game.get.metric (button);
 
@@ -97,6 +99,26 @@ game =
 				let c = { x: event.x, y: event.y };
 				let o = game.get.metric (button);
 				return ((c.x > o.x) && (c.x < o.x + o.w) && (c.y > o.y) && (c.y < o.y + o.h));
+			}
+
+			button.mousemove = function (event)
+			{
+				if (button.mousein (event))
+				{
+					if (!button.over)
+					{
+						button.over = true;
+						window.document.body.style.cursor = 'pointer';
+						button.draw ();
+					}
+				} else {
+					if (button.over)
+					{
+						button.over = false;
+						window.document.body.style.cursor = 'default';
+						button.draw ();
+					}
+				}
 			}
 
 			button.mouseup = function ()
@@ -216,7 +238,7 @@ game.run = function ()
 {
 	game.scene.start = function ()
 	{
-		game.create.button ({ a: function () { console.log ('click'); }, h: 0.1, t: 'start', wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { console.log ('click'); }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
 	game.scene.next = 'start';
 }
