@@ -1,12 +1,37 @@
 game =
 {
+	animate:
+	{
+		set play (o)
+		{
+			let delay = o.time / Object.keys (o.image).length;
+			let step = 0;
+			let steps = Object.keys (o.image).length;
+			window.setTimeout
+			(
+				function ()
+				{
+					game.canvas.context.drawImage (o.image[step++], 100, 100);
+					if (step < steps)
+					{
+						window.setTimeout (arguments.callee, delay);
+					} else if (o.loop) {
+						step = 0;
+						window.setTimeout (arguments.callee, delay);
+					}
+				},
+				0
+			);
+		}
+	},
+
 	canvas:
 	{
 		load: function ()
 		{
 			let canvas = window.document.createElement ('canvas');
 			canvas.context = canvas.getContext ('2d');
-			canvas.font = { face: 'Arial', size: 14 };
+			canvas.font = { face: 'Monospace', size: 14 };
 
 			canvas.clear = function ()
 			{
@@ -37,7 +62,7 @@ game =
 
 	create:
 	{
-		button: function (b)
+		set button (b)
 		{
 			let button = b || {};
 			button.a = b.a || function () {};
@@ -224,6 +249,22 @@ game =
 	{
 		load:
 		{
+			set animate (o)
+			{
+				for (let id in o)
+				{
+					let animate = o[id];
+					for (let id in animate.image)
+					{
+						let image = new Image ();
+							image.src = animate.image[id];
+						delete animate.image[id];
+						animate.image[id] = image;
+					}
+					game.animate[id] = animate;
+				}
+			},
+
 			set image (o)
 			{
 				for (let id in o)
@@ -273,6 +314,16 @@ game =
 
 window.onload = game.load;
 
+game.set.load.animate =
+{
+	tester:
+	{
+		image: { 0: 'data/tester.svg', 1: 'data/tester_green.svg' },
+		loop: true,
+		time: 1000
+	}
+}
+
 game.set.load.image =
 {
 	tester: 'data/tester.svg'
@@ -282,12 +333,48 @@ game.run = function ()
 {
 	game.scene.begin = function ()
 	{
-		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, i: game.image.tester, t0: 'black', tk: 1, wk: 0.5, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button =
+		{
+			a: function ()
+			{
+				game.animate.play = game.animate.tester;
+				game.play = { src: 'data/pow.ogg' };
+				game.scene.next = 'start';
+			},
+			f0: 'transparent',
+			h: 0.1,
+			i: game.image.tester,
+			t0: 'black',
+			tk: 1,
+			wk: 0.5,
+			x: 0.5,
+			xk:
+			0.5,
+			y: 0.5,
+			yk: 0.5
+		}
 	}
 
 	game.scene.start = function ()
 	{
-		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'begin'; }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button =
+		{
+			a: function ()
+			{
+				game.play = { src: 'data/pow.ogg' };
+				game.scene.next = 'begin';
+			},
+			f0: 'transparent',
+			h: 0.1,
+			t: 'start',
+			t0: 'black',
+			tk: 1,
+			wk: 2,
+			x: 0.5,
+			xk: 0.5,
+			y: 0.5,
+			yk: 0.5
+		}
 	}
 	game.scene.next = 'start';
 }
