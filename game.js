@@ -8,6 +8,11 @@ game =
 			canvas.context = canvas.getContext ('2d');
 			canvas.font = { face: 'Arial', size: 14 };
 
+			canvas.clear = function ()
+			{
+				canvas.context.clearRect (0, 0, canvas.width, canvas.height);
+			}
+
 			canvas.resize = function ()
 			{
 				canvas.height = window.innerHeight;
@@ -42,6 +47,7 @@ game =
 			button.f0 = b.f0 || 'white';
 			button.f1 = b.f1 || 'white';
 			button.h = b.h || 0.5;
+			button.i = b.i || undefined;
 			button.id = b.id || Object.keys (game.object).length;
 			button.lw = b.lw || 10;
 			button.over = false;
@@ -73,6 +79,11 @@ game =
 				context.fillStyle = button.color.background;
 				context.fillRect (o.x, o.y, o.w, o.h);
 
+				if (button.i)
+				{
+					context.drawImage (button.i, o.x, o.y, o.w, o.h);
+				}
+
 				context.fillStyle = button.color.text;
 				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
 				context.textAlign = 'center';
@@ -84,14 +95,15 @@ game =
 			{
 				if (button.mousein (event))
 				{
-					button.a ();
 					button.color.background = button.f1;
 					button.color.text = button.t1;
+					button.draw ();
+					button.a ();
 				} else {
 					button.color.background = button.f0;
 					button.color.text = button.t0;
+					button.draw ();
 				}
-				button.draw ();
 			}
 
 			button.mousein = function (event)
@@ -181,6 +193,8 @@ game =
 		}
 	},
 
+	image: {},
+
 	load: function ()
 	{
 		game.window.load ();
@@ -190,12 +204,35 @@ game =
 
 	object: {},
 
+	set play (o)
+	{
+		let audio = new Audio (o.src);
+			audio.volume = o.volume || 1;
+			audio.play ();
+	},
+
 	scene:
 	{
 		set next (name)
 		{
 			game.wipe ();
 			game.scene[name] ();
+		}
+	},
+
+	set:
+	{
+		load:
+		{
+			set image (o)
+			{
+				for (let id in o)
+				{
+					let image = new Image ();
+						image.src = o[id];
+					game.image[id] = image;
+				}
+			}
 		}
 	},
 
@@ -230,21 +267,27 @@ game =
 	{
 		delete game.object;
 		game.object = {};
+		game.canvas.clear ();
 	}
 }
 
 window.onload = game.load;
 
+game.set.load.image =
+{
+	tester: 'data/tester.svg'
+}
+
 game.run = function ()
 {
 	game.scene.begin = function ()
 	{
-		game.create.button ({ a: function () { game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, t: 'back', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, i: game.image.tester, t: 'back', t0: 'black', tk: 1, wk: 0.5, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
 
 	game.scene.start = function ()
 	{
-		game.create.button ({ a: function () { game.scene.next = 'begin'; }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'begin'; }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
 	game.scene.next = 'start';
 }
