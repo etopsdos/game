@@ -37,18 +37,18 @@ game =
 			let button = b || {};
 			button.a = b.a || function () {};
 			button.color = {};
-			button.color.background = b.f0 || 'black';
-			button.color.text = b.t0 || 'white';
-			button.f0 = b.f0 || 'black';
-			button.f1 = b.f1 || 'red';
+			button.color.background = b.f0 || 'white';
+			button.color.text = b.t0 || 'black';
+			button.f0 = b.f0 || 'white';
+			button.f1 = b.f1 || 'white';
 			button.h = b.h || 0.5;
 			button.id = b.id || Object.keys (game.object).length;
 			button.lw = b.lw || 10;
 			button.over = false;
 			button.t = b.t || ' ';
-			button.t0 = b.t0 || 'white';
+			button.t0 = b.t0 || 'black';
 			button.t1 = b.t1 || 'black';
-			button.tk = b.tk || 0.6;
+			button.tk = b.tk || 1;
 			button.w = b.w || 0.5;
 			button.x = b.x || 0.5;
 			button.y = b.y || 0.5;
@@ -138,6 +138,20 @@ game =
 		}
 	},
 
+	set destroy (id)
+	{
+		if (game.object[id])
+		{
+			if (game.object[id].destroy)
+			{
+				game.object[id].destroy ();
+				delete game.object[id];
+			} else {
+				delete game.object[id];
+			}
+		}
+	},
+
 	get:
 	{
 		font:
@@ -174,41 +188,13 @@ game =
 		game.run ();
 	},
 
-	object:
-	{
-		set destroy (id)
-		{
-			if (game.object[id])
-			{
-				if (game.object[id].destroy)
-				{
-					game.object[id].destroy ();
-					delete game.object[id];
-				} else {
-					delete game.object[id];
-				}
-			}
-		},
-
-		update: function (event)
-		{
-			for (let id in game.object)
-			{
-				for (let method in game.object[id])
-				{
-					if (method == event.type)
-					{
-						game.object[id][method] (event);
-					}
-				}
-			}
-		}
-	},
+	object: {},
 
 	scene:
 	{
 		set next (name)
 		{
+			game.wipe ();
 			game.scene[name] ();
 		}
 	},
@@ -216,7 +202,16 @@ game =
 	update: function (event)
 	{
 		game.canvas.update (event);
-		game.object.update (event);
+		for (let id in game.object)
+		{
+			for (let method in game.object[id])
+			{
+				if (method == event.type)
+				{
+					game.object[id][method] (event);
+				}
+			}
+		}
 	},
 
 	window:
@@ -229,6 +224,12 @@ game =
 			window.onload = game.update;
 			window.onresize = game.update;
 		}
+	},
+
+	wipe: function ()
+	{
+		delete game.object;
+		game.object = {};
 	}
 }
 
@@ -236,9 +237,14 @@ window.onload = game.load;
 
 game.run = function ()
 {
+	game.scene.begin = function ()
+	{
+		game.create.button ({ a: function () { game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, t: 'back', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+	}
+
 	game.scene.start = function ()
 	{
-		game.create.button ({ a: function () { console.log ('click'); }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { game.scene.next = 'begin'; }, f0: 'transparent', h: 0.1, t: 'start', t0: 'black', tk: 1, wk: 2, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
 	game.scene.next = 'start';
 }
