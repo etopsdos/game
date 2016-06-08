@@ -282,7 +282,7 @@ game.run = function ()
 {
 	game.scene.begin = function ()
 	{
-		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, i: game.image.tester, t: 'back', t0: 'black', tk: 1, wk: 0.5, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
+		game.create.button ({ a: function () { game.play = { src: 'data/pow.ogg' }; game.scene.next = 'start'; }, f0: 'transparent', h: 0.1, i: game.image.tester, t0: 'black', tk: 1, wk: 0.5, x: 0.5, xk: 0.5, y: 0.5, yk: 0.5 });
 	}
 
 	game.scene.start = function ()
