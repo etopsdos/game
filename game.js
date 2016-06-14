@@ -327,7 +327,7 @@ game.set.load.animate =
 {
 	tester:
 	{
-		image: { 0: 'data/tester.svg', 1: 'data/tester_green.svg' },
+		image: { 0: 'data/tester.png', 1: 'data/tester_test.png' },
 		loop: true,
 		time: 1000
 	}
@@ -335,7 +335,7 @@ game.set.load.animate =
 
 game.set.load.image =
 {
-	tester: 'data/tester.svg',
+	tester: 'data/tester.png',
 	tree: 'data/tree.png'
 }
 
