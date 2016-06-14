@@ -4,20 +4,20 @@ game =
 	{
 		set play (o)
 		{
-			let delay = o.time / Object.keys (o.image).length;
+			let delay = o.a.time / Object.keys (o.a.image).length;
+			let i = game.get.metric (o);
 			let step = 0;
-			let steps = Object.keys (o.image).length;
+			let steps = Object.keys (o.a.image).length;
 			window.setTimeout
 			(
 				function ()
 				{
-					game.canvas.context.drawImage (o.image[step++], 100, 100);
 					if (step < steps)
 					{
+						game.canvas.context.drawImage (o.a.image[step++], i.x, i.y, i.w, i.h);
 						window.setTimeout (arguments.callee, delay);
-					} else if (o.loop) {
-						step = 0;
-						window.setTimeout (arguments.callee, delay);
+					} else {
+						if (o.clear) { game.canvas.context.clearRect (i.x, i.y, i.w, i.h); }
 					}
 				},
 				0
@@ -99,6 +99,7 @@ game =
 			{
 				button.clear ();
 				let context = game.canvas.context;
+					context.imageSmoothingEnabled = false;
 				let o = game.get.metric (button);
 
 				context.fillStyle = button.color.background;
@@ -170,8 +171,16 @@ game =
 				button.draw ();
 			}
 
-			game.object[button.id] = button;
 			button.draw ();
+			game.object[button.id] = button;
+		},
+
+		set player (p)
+		{
+			let player = p || {};
+			player.id = p.id || Object.keys (game.object).length;
+
+			game.object[player.id] = player;
 		}
 	},
 
@@ -326,7 +335,8 @@ game.set.load.animate =
 
 game.set.load.image =
 {
-	tester: 'data/tester.svg'
+	tester: 'data/tester.svg',
+	tree: 'data/tree.png'
 }
 
 game.run = function ()
@@ -337,13 +347,13 @@ game.run = function ()
 		{
 			a: function ()
 			{
-				game.animate.play = game.animate.tester;
+				game.animate.play = { a: game.animate.tester, clear: true, h: 0.1, wk: 0.5, x: 0.1, y: 0.5 };
 				game.play = { src: 'data/pow.ogg' };
 				game.scene.next = 'start';
 			},
 			f0: 'transparent',
 			h: 0.1,
-			i: game.image.tester,
+			i: game.image.tree,
 			t0: 'black',
 			tk: 1,
 			wk: 0.5,
