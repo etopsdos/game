@@ -245,6 +245,32 @@ game =
 			audio.play ();
 	},
 
+	random: function (a, b, c)
+	{
+		let r;
+
+		if (a)
+		{
+			if (b)
+			{
+				if (b == true)
+				{
+					r = Math.random () * a >> 0;
+				} else {
+					r = Math.random () * (b - a) + a;
+					if (c == true)
+					{
+						r = (Math.random () * (b - a + 1)) >> 0 + a;
+					}
+				}
+			} else {
+				r = Math.random () * a;
+			}
+		}
+
+		return r;
+	},
+
 	scene:
 	{
 		set next (name)
