@@ -178,8 +178,46 @@ game =
 		set player (p)
 		{
 			let player = p || {};
+			player.color = {};
+			player.color.background = p.f0 || 'transparent';
+			player.h = p.h || 0.1;
+			player.i = p.i || game.image.tester;
 			player.id = p.id || Object.keys (game.object).length;
+			player.w = p.w || 0.1;
+			player.x = p.x || game.random ();
+			player.y = p.y || game.random ();
 
+			player.clear = function ()
+			{
+				let o = game.get.metric (player);
+				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
+			}
+
+			player.draw = function ()
+			{
+				player.clear ();
+				let context = game.canvas.context;
+					context.imageSmoothingEnabled = false;
+				let o = game.get.metric (player);
+
+				context.fillStyle = player.color.background;
+				context.fillRect (o.x, o.y, o.w, o.h);
+
+				if (player.i)
+				{
+					context.drawImage (player.i, o.x, o.y, o.w, o.h);
+				}
+
+				/*
+				context.fillStyle = button.color.text;
+				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+				context.textAlign = 'center';
+				context.textBaseline = 'middle';
+				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
+				*/
+			}
+
+			player.draw ();
 			game.object[player.id] = player;
 		}
 	},
@@ -383,9 +421,19 @@ game.run = function ()
 			t0: 'black',
 			tk: 1,
 			wk: 0.5,
+			x: 0.9,
+			xk: 0.5,
+			y: 0.1,
+			yk: 0.5
+		}
+
+		game.create.player =
+		{
+			h: 0.1,
+			i: game.image.tester,
+			wk: 0.5,
 			x: 0.5,
-			xk:
-			0.5,
+			xk: 0.5,
 			y: 0.5,
 			yk: 0.5
 		}
