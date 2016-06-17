@@ -382,6 +382,7 @@ game =
 		delete game.object;
 		game.object = {};
 		game.canvas.clear ();
+		window.document.body.style.cursor = 'default';
 	}
 }
 
