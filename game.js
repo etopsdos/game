@@ -217,6 +217,11 @@ game =
 				*/
 			}
 
+			player.tick = function (event)
+			{
+				//console.log (event.time);
+			}
+
 			player.draw ();
 			game.object[player.id] = player;
 		}
@@ -374,7 +379,25 @@ game =
 			window.onmouseup = game.update;
 			window.onload = game.update;
 			window.onresize = game.update;
-		}
+
+			game.window.ontick = game.update;
+		},
+
+		set ontick (f)
+		{
+			game.window.clock = window.setInterval
+			(
+				function ()
+				{
+					f ({ tick: game.window.tick, time: game.window.time, type: 'tick' });
+					game.window.time += game.window.tick;
+				},
+				game.window.tick * 100
+			);
+		},
+
+		tick: 1,
+		time: 0
 	},
 
 	wipe: function ()
