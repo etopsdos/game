@@ -17,7 +17,7 @@ game =
 						game.canvas.context.drawImage (o.a.image[step++], i.x, i.y, i.w, i.h);
 						window.setTimeout (arguments.callee, delay);
 					} else {
-						if (o.clear) { game.canvas.context.clearRect (i.x, i.y, i.w, i.h); }
+						//if (o.clear) { game.canvas.context.clearRect (i.x, i.y, i.w, i.h); }
 					}
 				},
 				0
@@ -183,9 +183,26 @@ game =
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
 			player.id = p.id || Object.keys (game.object).length;
+			player.time = {};
+			player.time.blink = 50;
+			player.time.blink0 = 0;
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
 			player.y = p.y || game.random ();
+
+			player.blink = function (event)
+			{
+				player.time.blink0 += event.tick;
+				if (player.time.blink0 > player.time.blink)
+				{
+					let o = player;
+					o.a = game.animate.tester;
+					//player.clear ();
+					player.time.blink = game.random (3, 80, true);
+					player.time.blink0 = 0;
+					game.animate.play = o;
+				}
+			}
 
 			player.clear = function ()
 			{
@@ -219,7 +236,7 @@ game =
 
 			player.tick = function (event)
 			{
-				//console.log (event.time);
+				player.blink (event);
 			}
 
 			player.draw ();
@@ -303,7 +320,7 @@ game =
 					r = Math.random () * (b - a) + a;
 					if (c == true)
 					{
-						r = (Math.random () * (b - a + 1)) >> 0 + a;
+						r = Math.floor((Math.random () * (b - a + 1))) + a;
 					}
 				}
 			} else {
@@ -374,12 +391,12 @@ game =
 	{
 		load: function ()
 		{
+			window.onkeydown = game.update;
+			window.onload = game.update;
 			window.onmousedown = game.update;
 			window.onmousemove = game.update;
 			window.onmouseup = game.update;
-			window.onload = game.update;
 			window.onresize = game.update;
-
 			game.window.ontick = game.update;
 		},
 
@@ -393,7 +410,7 @@ game =
 					game.window.time += game.window.tick;
 				},
 				game.window.tick * 100
-			);
+			)
 		},
 
 		tick: 1,
@@ -415,9 +432,8 @@ game.set.load.animate =
 {
 	tester:
 	{
-		image: { 0: 'data/tester.png', 1: 'data/tester_test.png' },
-		loop: true,
-		time: 1000
+		image: { 0: 'data/tester.png', 1: 'data/tester_test.png', 2: 'data/tester.png' },
+		time: 200
 	}
 }
 
