@@ -184,7 +184,7 @@ game =
 			player.i = p.i || game.image.tester;
 			player.id = p.id || Object.keys (game.object).length;
 			player.time = {};
-			player.time.blink = 50;
+			player.time.blink = game.random (3, 80, true);
 			player.time.blink0 = 0;
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
@@ -197,10 +197,9 @@ game =
 				{
 					let o = player;
 					o.a = game.animate.tester;
-					//player.clear ();
+					game.animate.play = o;
 					player.time.blink = game.random (3, 80, true);
 					player.time.blink0 = 0;
-					game.animate.play = o;
 				}
 			}
 
@@ -234,6 +233,11 @@ game =
 				*/
 			}
 
+			player.resize = function ()
+			{
+				player.draw ();
+			}
+
 			player.tick = function (event)
 			{
 				player.blink (event);
@@ -241,6 +245,87 @@ game =
 
 			player.draw ();
 			game.object[player.id] = player;
+		},
+
+		set unit (u)
+		{
+			let unit = u || {};
+			unit.a =
+			{
+				wait: game.animate.tree
+			};
+			unit.color = {};
+			unit.color.background = u.f0 || 'transparent';
+			unit.h = u.h || 0.1;
+			unit.i = u.i || game.image.tester;
+			unit.id = u.id || Object.keys (game.object).length;
+			unit.time = {};
+			unit.time.blink = 5;
+			unit.time.blink0 = 0;
+			unit.w = u.w || 0.1;
+			unit.x = u.x || game.random ();
+			unit.y = u.y || game.random ();
+
+			unit.blink = function (event)
+			{
+				unit.time.blink0 += event.tick;
+				if (unit.time.blink0 > unit.time.blink)
+				{
+					let o = unit;
+					o.a = game.animate.tree;
+					game.animate.play = o;
+					unit.time.blink = 30;
+					unit.time.blink0 = 0;
+				}
+			}
+
+			unit.clear = function ()
+			{
+				let o = game.get.metric (unit);
+				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
+			}
+
+			unit.destroy = function ()
+			{
+				unit.clear ();
+			}
+
+			unit.draw = function ()
+			{
+				unit.clear ();
+				let context = game.canvas.context;
+					context.imageSmoothingEnabled = false;
+				let o = game.get.metric (unit);
+
+				context.fillStyle = unit.color.background;
+				context.fillRect (o.x, o.y, o.w, o.h);
+
+				if (unit.i)
+				{
+					context.drawImage (unit.i, o.x, o.y, o.w, o.h);
+				}
+
+				/*
+				context.fillStyle = button.color.text;
+				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+				context.textAlign = 'center';
+				context.textBaseline = 'middle';
+				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
+				*/
+			}
+
+			unit.resize = function ()
+			{
+				unit.draw ();
+			}
+
+			unit.tick = function (event)
+			{
+				unit.blink (event);
+			}
+
+			unit.draw ();
+			game.object[unit.id] = unit;
 		}
 	},
 
@@ -434,6 +519,12 @@ game.set.load.animate =
 	{
 		image: { 0: 'data/tester.png', 1: 'data/tester_test.png', 2: 'data/tester.png' },
 		time: 200
+	},
+
+	tree:
+	{
+		image: { 0: 'data/tree.png', 1: 'data/tree_wait.png', 2: 'data/tree_wait1.png', 3: 'data/tree_wait2.png', 4: 'data/tree_wait3.png', 5: 'data/tree.png' },
+		time: 3000
 	}
 }
 
@@ -473,6 +564,17 @@ game.run = function ()
 			i: game.image.tester,
 			wk: 0.5,
 			x: 0.5,
+			xk: 0.5,
+			y: 0.5,
+			yk: 0.5
+		}
+
+		game.create.unit =
+		{
+			h: 0.1,
+			i: game.image.tree,
+			wk: 0.5,
+			x: 0.4,
 			xk: 0.5,
 			y: 0.5,
 			yk: 0.5
