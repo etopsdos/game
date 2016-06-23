@@ -57,6 +57,7 @@ game =
 			let canvas = window.document.createElement ('canvas');
 			canvas.context = canvas.getContext ('2d');
 			canvas.font = { face: 'Monospace', size: 14 };
+			canvas.z = 0;
 
 			canvas.clear = function ()
 			{
@@ -371,6 +372,26 @@ game =
 			}
 		}
 	},
+
+	set draw (o)
+	{
+		if (game.draws[o.z] == undefined)
+		{
+			game.draws[o.z] = {};
+		}
+
+		game.draws[o.z][o.id] = o;
+
+		for (let z in game.draws)
+		{
+			for (let id in game.draws[z])
+			{
+				o.draw ();
+			}
+		}
+	},
+
+	draws: {},
 
 	get:
 	{
