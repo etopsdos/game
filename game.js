@@ -4,25 +4,50 @@ game =
 	{
 		set play (o)
 		{
-			let delay = o.a.time / Object.keys (o.a.image).length;
-			let i = game.get.metric (o);
-			let step = 0;
-			let steps = Object.keys (o.a.image).length;
-			window.setTimeout
-			(
-				function ()
+			let a = {};
+			a.delay = o.a.time / Object.keys (o.a.image).length;
+			a.id = game.get.id;
+			a.next = o.next || function () {};
+			a.step = 0;
+			a.steps = Object.keys (o.a.image).length;
+
+			a.clear = function ()
+			{
+				let i = game.get.metric (o);
+				game.canvas.context.clearRect (i.x, i.y, i.w, i.h);
+			}
+
+			a.destroy = function ()
+			{
+				a.clear ();
+			}
+
+			a.draw = function ()
+			{
+				if (a.step < a.steps)
 				{
-					if (step < steps)
-					{
-						game.canvas.context.drawImage (o.a.image[step++], i.x, i.y, i.w, i.h);
-						window.setTimeout (arguments.callee, delay);
-					} else {
-						//if (o.clear) { game.canvas.context.clearRect (i.x, i.y, i.w, i.h); }
-					}
-				},
-				0
-			);
-		}
+					let i = game.get.metric (o);
+					game.canvas.context.drawImage (o.a.image[a.step++], i.x, i.y, i.w, i.h);
+				} else {
+					game.destroy = a.id;
+					a.next ();
+				}
+			}
+
+			a.resize = function ()
+			{
+				a.draw ();
+			}
+
+			a.tick = function ()
+			{
+				a.draw ();
+			}
+
+			game.object[a.id] = a;
+		},
+
+		wipe: false
 	},
 
 	canvas:
@@ -73,7 +98,7 @@ game =
 			button.f1 = b.f1 || 'white';
 			button.h = b.h || 0.5;
 			button.i = b.i || undefined;
-			button.id = b.id || Object.keys (game.object).length;
+			button.id = game.get.id;
 			button.lw = b.lw || 10;
 			button.over = false;
 			button.t = b.t || ' ';
@@ -182,7 +207,7 @@ game =
 			player.color.background = p.f0 || 'transparent';
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
-			player.id = p.id || Object.keys (game.object).length;
+			player.id = game.get.id;
 			player.time = {};
 			player.time.blink = game.random (3, 80, true);
 			player.time.blink0 = 0;
@@ -197,6 +222,7 @@ game =
 				{
 					let o = player;
 					o.a = game.animate.tester;
+					o.next = player.draw;
 					game.animate.play = o;
 					player.time.blink = game.random (3, 80, true);
 					player.time.blink0 = 0;
@@ -258,13 +284,15 @@ game =
 			unit.color.background = u.f0 || 'transparent';
 			unit.h = u.h || 0.1;
 			unit.i = u.i || game.image.tester;
-			unit.id = u.id || Object.keys (game.object).length;
+			unit.id = game.get.id;
 			unit.time = {};
 			unit.time.blink = 5;
 			unit.time.blink0 = 0;
 			unit.w = u.w || 0.1;
 			unit.x = u.x || game.random ();
+			unit.xk = u.xk;
 			unit.y = u.y || game.random ();
+			unit.yk = u.yk;
 
 			unit.blink = function (event)
 			{
@@ -273,6 +301,7 @@ game =
 				{
 					let o = unit;
 					o.a = game.animate.tree;
+					o.next = unit.draw;
 					game.animate.play = o;
 					unit.time.blink = 30;
 					unit.time.blink0 = 0;
@@ -361,16 +390,23 @@ game =
 			}
 		},
 
+		get id ()
+		{
+			return game.id++;
+		},
+
 		metric: function (o)
 		{
 			let object = {};
 			object.h = (o.hk) ? o.hk * o.w * game.canvas.width >> 0 : o.h * game.canvas.height >> 0;
 			object.w = (o.wk) ? o.wk * o.h * game.canvas.height >> 0 : o.w * game.canvas.width >> 0;
 			object.x = (o.xk) ? o.x * game.canvas.width - o.xk * object.w >> 0 : o.x * game.canvas.width >> 0;
-			object.y = (o.yk) ? o.y * game.canvas.height - o.xk * object.h >> 0 : o.y * game.canvas.height >> 0;
+			object.y = (o.yk) ? o.y * game.canvas.height - o.yk * object.h >> 0 : o.y * game.canvas.height >> 0;
 			return object;
 		}
 	},
+
+	id: 0,
 
 	image: {},
 
@@ -505,6 +541,7 @@ game =
 	wipe: function ()
 	{
 		delete game.object;
+		//game.animate.wipe = true;
 		game.object = {};
 		game.canvas.clear ();
 		window.document.body.style.cursor = 'default';
@@ -574,10 +611,10 @@ game.run = function ()
 			h: 0.1,
 			i: game.image.tree,
 			wk: 0.5,
-			x: 0.4,
+			x: 0.3,
 			xk: 0.5,
 			y: 0.5,
-			yk: 0.5
+			yk: 0.9
 		}
 	}
 
