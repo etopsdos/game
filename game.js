@@ -289,9 +289,9 @@ game =
 			unit.time.blink = 5;
 			unit.time.blink0 = 0;
 			unit.w = u.w || 0.1;
-			unit.x = u.x || game.random ();
+			unit.x = u.x || game.random (1);
 			unit.xk = u.xk;
-			unit.y = u.y || game.random ();
+			unit.y = u.y || game.random (1);
 			unit.yk = u.yk;
 
 			unit.blink = function (event)
@@ -303,7 +303,7 @@ game =
 					o.a = game.animate.tree;
 					o.next = unit.draw;
 					game.animate.play = o;
-					unit.time.blink = 30;
+					unit.time.blink = game.random (3, 80, true);
 					unit.time.blink0 = 0;
 				}
 			}
@@ -606,14 +606,13 @@ game.run = function ()
 			yk: 0.5
 		}
 
+		for (let i = 10; i--;)
 		game.create.unit =
 		{
 			h: 0.1,
 			i: game.image.tree,
 			wk: 0.5,
-			x: 0.3,
 			xk: 0.5,
-			y: 0.5,
 			yk: 0.9
 		}
 	}
