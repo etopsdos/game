@@ -140,8 +140,8 @@ game =
 
 				draw.draw = function ()
 				{
-					button.clear ();
 					let context = game.canvas.context;
+						context.globalCompositeOperation = 'source-over';
 						context.imageSmoothingEnabled = false;
 					let o = game.get.metric (button);
 
@@ -265,8 +265,8 @@ game =
 
 				draw.draw = function ()
 				{
-					player.clear ();
 					let context = game.canvas.context;
+						context.globalCompositeOperation = 'source-over';
 						context.imageSmoothingEnabled = false;
 					let o = game.get.metric (player);
 
@@ -359,8 +359,8 @@ game =
 
 				draw.draw = function ()
 				{
-					unit.clear ();
 					let context = game.canvas.context;
+						context.globalCompositeOperation = 'source-over';
 						context.imageSmoothingEnabled = false;
 					let o = game.get.metric (unit);
 
@@ -665,7 +665,8 @@ game.run = function ()
 			x: 0.5,
 			xk: 0.5,
 			y: 0.5,
-			yk: 0.5
+			yk: 0.5,
+			z: 1
 		}
 
 		for (let i = 100; i--;)
