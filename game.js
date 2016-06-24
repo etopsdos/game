@@ -10,6 +10,7 @@ game =
 			a.next = o.next || function () {};
 			a.step = 0;
 			a.steps = Object.keys (o.a.image).length;
+			a.z = o.z || 0;
 
 			a.clear = function ()
 			{
@@ -22,26 +23,35 @@ game =
 				a.clear ();
 			}
 
+/*
 			a.draw = function ()
 			{
 				if (a.step < a.steps)
 				{
-					let i = game.get.metric (o);
-					game.canvas.context.drawImage (o.a.image[a.step++], i.x, i.y, i.w, i.h);
+					let draw = {};
+					draw.id = 'animate' + a.id;
+					draw.z = a.z;
+					draw.draw = function ()
+					{
+						let i = game.get.metric (o);
+						game.canvas.context.drawImage (o.a.image[a.step++], i.x, i.y, i.w, i.h);
+					}
+					game.draw = draw;
 				} else {
 					game.destroy = a.id;
 					a.next ();
 				}
-			}
 
+			}
+*/
 			a.resize = function ()
 			{
-				a.draw ();
+				//a.draw ();
 			}
 
 			a.tick = function ()
 			{
-				a.draw ();
+				//a.draw ();
 			}
 
 			game.object[a.id] = a;
@@ -109,6 +119,7 @@ game =
 			button.w = b.w || 0.5;
 			button.x = b.x || 0.5;
 			button.y = b.y || 0.5;
+			button.z = b.z || 0;
 
 			button.clear = function ()
 			{
@@ -123,24 +134,33 @@ game =
 
 			button.draw = function ()
 			{
-				button.clear ();
-				let context = game.canvas.context;
-					context.imageSmoothingEnabled = false;
-				let o = game.get.metric (button);
+				let draw = {};
+				draw.id = 'button' + button.id;
+				draw.z = button.z;
 
-				context.fillStyle = button.color.background;
-				context.fillRect (o.x, o.y, o.w, o.h);
-
-				if (button.i)
+				draw.draw = function ()
 				{
-					context.drawImage (button.i, o.x, o.y, o.w, o.h);
+					button.clear ();
+					let context = game.canvas.context;
+						context.imageSmoothingEnabled = false;
+					let o = game.get.metric (button);
+
+					context.fillStyle = button.color.background;
+					context.fillRect (o.x, o.y, o.w, o.h);
+
+					if (button.i)
+					{
+						context.drawImage (button.i, o.x, o.y, o.w, o.h);
+					}
+
+					context.fillStyle = button.color.text;
+					context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+					context.textAlign = 'center';
+					context.textBaseline = 'middle';
+					context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
 				}
 
-				context.fillStyle = button.color.text;
-				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
+				game.draw = draw;
 			}
 
 			button.mousedown = function (event)
@@ -215,6 +235,7 @@ game =
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
 			player.y = p.y || game.random ();
+			player.z = p.z || 0;
 
 			player.blink = function (event)
 			{
@@ -238,26 +259,35 @@ game =
 
 			player.draw = function ()
 			{
-				player.clear ();
-				let context = game.canvas.context;
-					context.imageSmoothingEnabled = false;
-				let o = game.get.metric (player);
+				let draw = {};
+				draw.id = 'player' + player.id;
+				draw.z = player.z;
 
-				context.fillStyle = player.color.background;
-				context.fillRect (o.x, o.y, o.w, o.h);
-
-				if (player.i)
+				draw.draw = function ()
 				{
-					context.drawImage (player.i, o.x, o.y, o.w, o.h);
+					player.clear ();
+					let context = game.canvas.context;
+						context.imageSmoothingEnabled = false;
+					let o = game.get.metric (player);
+
+					context.fillStyle = player.color.background;
+					context.fillRect (o.x, o.y, o.w, o.h);
+
+					if (player.i)
+					{
+						context.drawImage (player.i, o.x, o.y, o.w, o.h);
+					}
+
+					/*
+					context.fillStyle = button.color.text;
+					context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+					context.textAlign = 'center';
+					context.textBaseline = 'middle';
+					context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
+					*/
 				}
 
-				/*
-				context.fillStyle = button.color.text;
-				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
-				*/
+				game.draw = draw;
 			}
 
 			player.resize = function ()
@@ -294,6 +324,7 @@ game =
 			unit.xk = u.xk;
 			unit.y = u.y || game.random (1);
 			unit.yk = u.yk;
+			unit.z = u.z || 0;
 
 			unit.blink = function (event)
 			{
@@ -322,26 +353,35 @@ game =
 
 			unit.draw = function ()
 			{
-				unit.clear ();
-				let context = game.canvas.context;
-					context.imageSmoothingEnabled = false;
-				let o = game.get.metric (unit);
+				let draw = {};
+				draw.id = 'unit' + unit.id;
+				draw.z = unit.z;
 
-				context.fillStyle = unit.color.background;
-				context.fillRect (o.x, o.y, o.w, o.h);
-
-				if (unit.i)
+				draw.draw = function ()
 				{
-					context.drawImage (unit.i, o.x, o.y, o.w, o.h);
+					unit.clear ();
+					let context = game.canvas.context;
+						context.imageSmoothingEnabled = false;
+					let o = game.get.metric (unit);
+
+					context.fillStyle = unit.color.background;
+					context.fillRect (o.x, o.y, o.w, o.h);
+
+					if (unit.i)
+					{
+						context.drawImage (unit.i, o.x, o.y, o.w, o.h);
+					}
+
+					/*
+					context.fillStyle = button.color.text;
+					context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
+					context.textAlign = 'center';
+					context.textBaseline = 'middle';
+					context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
+					*/
 				}
 
-				/*
-				context.fillStyle = button.color.text;
-				context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
-				context.textAlign = 'center';
-				context.textBaseline = 'middle';
-				context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
-				*/
+				game.draw = draw;
 			}
 
 			unit.resize = function ()
@@ -386,7 +426,7 @@ game =
 		{
 			for (let id in game.draws[z])
 			{
-				o.draw ();
+				game.draws[z][id].draw ();
 			}
 		}
 	},
@@ -562,7 +602,7 @@ game =
 	wipe: function ()
 	{
 		delete game.object;
-		//game.animate.wipe = true;
+		game.draws = {};
 		game.object = {};
 		game.canvas.clear ();
 		window.document.body.style.cursor = 'default';
@@ -613,7 +653,8 @@ game.run = function ()
 			x: 0.9,
 			xk: 0.5,
 			y: 0.1,
-			yk: 0.5
+			yk: 0.5,
+			z: 1
 		}
 
 		game.create.player =
@@ -627,7 +668,7 @@ game.run = function ()
 			yk: 0.5
 		}
 
-		for (let i = 10; i--;)
+		for (let i = 100; i--;)
 		game.create.unit =
 		{
 			h: 0.1,
