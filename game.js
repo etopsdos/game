@@ -57,8 +57,8 @@ game =
 			button.t1 = b.t1 || 'black';
 			button.tk = b.tk || 1;
 			button.w = b.w || 0.5;
-			button.x = b.x || 0.5;
-			button.y = b.y || 0.5;
+			button.x = b.x || 0;
+			button.y = b.y || 0;
 			button.z = b.z || 0;
 
 			button.clear = function ()
@@ -172,7 +172,9 @@ game =
 			player.id = 'player';
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
+			player.X = 0.5;
 			player.y = p.y || game.random ();
+			player.Y = 0.5;
 			player.z = p.z || 0;
 
 			player.clear = function ()
@@ -215,6 +217,80 @@ game =
 				game.draw = draw;
 			}
 
+			player.keyup = function (event)
+			{
+				switch (event.keyCode)
+				{
+					case 37: player.move.left (); break;
+					case 38: player.move.top (); break;
+					case 39: player.move.right (); break;
+					case 40: player.move.down (); break;
+				}
+			}
+
+			player.move =
+			{
+				down: function ()
+				{
+					for (let id in game.object)
+					{
+						let o = game.object[id];
+						if (o.type == 'decor')
+						{console.log ('d');
+							o.clear ();
+							player.Y -= 0.25 * player.h;
+							o.y -= 0.25 * player.h;
+							o.draw ();
+						}
+					}
+				},
+
+				left: function ()
+				{
+					for (let id in game.object)
+					{
+						let o = game.object[id];
+						if (o.type == 'decor')
+						{console.log ('d');
+							o.clear ();
+							player.X -= 0.25 * player.w;
+							o.x += 0.25 * player.w;
+							o.draw ();
+						}
+					}
+				},
+
+				right: function ()
+				{
+					for (let id in game.object)
+					{
+						let o = game.object[id];
+						if (o.type == 'decor')
+						{console.log ('d');
+							o.clear ();
+							player.X += 0.25 * player.w;
+							o.x -= 0.25 * player.w;
+							o.draw ();
+						}
+					}
+				},
+
+				top: function ()
+				{
+					for (let id in game.object)
+					{
+						let o = game.object[id];
+						if (o.type == 'decor')
+						{console.log ('d');
+							o.clear ();
+							player.Y += 0.25 * player.h;
+							o.y += 0.25 * player.h;
+							o.draw ();
+						}
+					}
+				}
+			}
+
 			player.resize = function ()
 			{
 				player.draw ();
@@ -232,6 +308,8 @@ game =
 			unit.h = u.h || 0.1;
 			unit.i = u.i || game.image.tester;
 			unit.id = game.get.id;
+			unit.name = u.name || 'unite';
+			unit.type = u.type || 'decor';
 			unit.w = u.w || 0.1;
 			unit.x = u.x || game.random (1);
 			unit.xk = u.xk;
@@ -254,7 +332,8 @@ game =
 			{
 				let draw = {};
 				draw.id = 'unit' + unit.id;
-				draw.z = (unit.y > 0.5) ? game.object.player.z + 1 : game.object.player.z - 1;
+				console.log (game.object.player.Y);
+				draw.z = (unit.y > game.object.player.y) ? game.object.player.z + 1 : game.object.player.z - 1;
 
 				draw.draw = function ()
 				{
@@ -460,7 +539,7 @@ game =
 	{
 		load: function ()
 		{
-			window.onkeydown = game.update;
+			window.onkeyup = game.update;
 			window.onload = game.update;
 			window.onmousedown = game.update;
 			window.onmousemove = game.update;
@@ -500,6 +579,7 @@ window.onload = game.load;
 
 game.set.load.image =
 {
+	back: 'data/back.png',
 	tester: 'data/tester.png',
 	tree: 'data/tree.png'
 }
@@ -516,15 +596,13 @@ game.run = function ()
 				game.scene.next = 'start';
 			},
 			f0: 'transparent',
-			h: 0.1,
-			i: game.image.tree,
+			h: 0.05,
+			i: game.image.back,
 			t0: 'black',
 			tk: 1,
-			wk: 0.5,
-			x: 0.9,
-			xk: 0.5,
-			y: 0.1,
-			yk: 0.5,
+			wk: 1.5,
+			x: 0,
+			y: 0,
 			z: 1
 		}
 
@@ -545,6 +623,7 @@ game.run = function ()
 		{
 			h: 0.1,
 			i: game.image.tree,
+			type: 'decor',
 			wk: 0.5
 		}
 	}
