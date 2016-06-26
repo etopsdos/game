@@ -1,65 +1,5 @@
 game =
 {
-	animate:
-	{
-		set play (o)
-		{
-			let a = {};
-			a.delay = o.a.time / Object.keys (o.a.image).length;
-			a.id = game.get.id;
-			a.next = o.next || function () {};
-			a.step = 0;
-			a.steps = Object.keys (o.a.image).length;
-			a.z = o.z || 0;
-
-			a.clear = function ()
-			{
-				let i = game.get.metric (o);
-				game.canvas.context.clearRect (i.x, i.y, i.w, i.h);
-			}
-
-			a.destroy = function ()
-			{
-				a.clear ();
-			}
-
-/*
-			a.draw = function ()
-			{
-				if (a.step < a.steps)
-				{
-					let draw = {};
-					draw.id = 'animate' + a.id;
-					draw.z = a.z;
-					draw.draw = function ()
-					{
-						let i = game.get.metric (o);
-						game.canvas.context.drawImage (o.a.image[a.step++], i.x, i.y, i.w, i.h);
-					}
-					game.draw = draw;
-				} else {
-					game.destroy = a.id;
-					a.next ();
-				}
-
-			}
-*/
-			a.resize = function ()
-			{
-				//a.draw ();
-			}
-
-			a.tick = function ()
-			{
-				//a.draw ();
-			}
-
-			game.object[a.id] = a;
-		},
-
-		wipe: false
-	},
-
 	canvas:
 	{
 		load: function ()
@@ -160,6 +100,7 @@ game =
 					context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
 				}
 
+				button.clear ();
 				game.draw = draw;
 			}
 
@@ -229,27 +170,10 @@ game =
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
 			player.id = game.get.id;
-			player.time = {};
-			player.time.blink = game.random (3, 80, true);
-			player.time.blink0 = 0;
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
 			player.y = p.y || game.random ();
 			player.z = p.z || 0;
-
-			player.blink = function (event)
-			{
-				player.time.blink0 += event.tick;
-				if (player.time.blink0 > player.time.blink)
-				{
-					let o = player;
-					o.a = game.animate.tester;
-					o.next = player.draw;
-					game.animate.play = o;
-					player.time.blink = game.random (3, 80, true);
-					player.time.blink0 = 0;
-				}
-			}
 
 			player.clear = function ()
 			{
@@ -287,17 +211,13 @@ game =
 					*/
 				}
 
+				player.clear ();
 				game.draw = draw;
 			}
 
 			player.resize = function ()
 			{
 				player.draw ();
-			}
-
-			player.tick = function (event)
-			{
-				player.blink (event);
 			}
 
 			player.draw ();
@@ -307,38 +227,17 @@ game =
 		set unit (u)
 		{
 			let unit = u || {};
-			unit.a =
-			{
-				wait: game.animate.tree
-			};
 			unit.color = {};
 			unit.color.background = u.f0 || 'transparent';
 			unit.h = u.h || 0.1;
 			unit.i = u.i || game.image.tester;
 			unit.id = game.get.id;
-			unit.time = {};
-			unit.time.blink = 5;
-			unit.time.blink0 = 0;
 			unit.w = u.w || 0.1;
 			unit.x = u.x || game.random (1);
 			unit.xk = u.xk;
 			unit.y = u.y || game.random (1);
 			unit.yk = u.yk;
 			unit.z = u.z || 0;
-
-			unit.blink = function (event)
-			{
-				unit.time.blink0 += event.tick;
-				if (unit.time.blink0 > unit.time.blink)
-				{
-					let o = unit;
-					o.a = game.animate.tree;
-					o.next = unit.draw;
-					game.animate.play = o;
-					unit.time.blink = game.random (3, 80, true);
-					unit.time.blink0 = 0;
-				}
-			}
 
 			unit.clear = function ()
 			{
@@ -371,27 +270,15 @@ game =
 					{
 						context.drawImage (unit.i, o.x, o.y, o.w, o.h);
 					}
-
-					/*
-					context.fillStyle = button.color.text;
-					context.font = game.get.font.size (button.t, button.tk * o.w) + 'px ' + game.canvas.font.face;
-					context.textAlign = 'center';
-					context.textBaseline = 'middle';
-					context.fillText (button.t, o.x + 0.5 * o.w, o.y + 0.5 * o.h);
-					*/
 				}
 
+				unit.clear ();
 				game.draw = draw;
 			}
 
 			unit.resize = function ()
 			{
 				unit.draw ();
-			}
-
-			unit.tick = function (event)
-			{
-				unit.blink (event);
 			}
 
 			unit.draw ();
@@ -611,21 +498,6 @@ game =
 
 window.onload = game.load;
 
-game.set.load.animate =
-{
-	tester:
-	{
-		image: { 0: 'data/tester.png', 1: 'data/tester_test.png', 2: 'data/tester.png' },
-		time: 200
-	},
-
-	tree:
-	{
-		image: { 0: 'data/tree.png', 1: 'data/tree_wait.png', 2: 'data/tree_wait1.png', 3: 'data/tree_wait2.png', 4: 'data/tree_wait3.png', 5: 'data/tree.png' },
-		time: 3000
-	}
-}
-
 game.set.load.image =
 {
 	tester: 'data/tester.png',
@@ -640,7 +512,6 @@ game.run = function ()
 		{
 			a: function ()
 			{
-				game.animate.play = { a: game.animate.tester, clear: true, h: 0.1, wk: 0.5, x: 0.1, y: 0.5 };
 				game.play = { src: 'data/pow.ogg' };
 				game.scene.next = 'start';
 			},
