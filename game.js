@@ -169,7 +169,7 @@ game =
 			player.color.background = p.f0 || 'transparent';
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
-			player.id = game.get.id;
+			player.id = 'player';
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
 			player.y = p.y || game.random ();
@@ -254,7 +254,7 @@ game =
 			{
 				let draw = {};
 				draw.id = 'unit' + unit.id;
-				draw.z = unit.z;
+				draw.z = (unit.y > 0.5) ? game.object.player.z + 1 : game.object.player.z - 1;
 
 				draw.draw = function ()
 				{
@@ -545,9 +545,7 @@ game.run = function ()
 		{
 			h: 0.1,
 			i: game.image.tree,
-			wk: 0.5,
-			xk: 0.5,
-			yk: 0.9
+			wk: 0.5
 		}
 	}
 
