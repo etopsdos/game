@@ -170,11 +170,10 @@ game =
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
 			player.id = 'player';
+			player.s = 0.1;
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
-			player.X = 0.5;
 			player.y = p.y || game.random ();
-			player.Y = 0.5;
 			player.z = p.z || 0;
 
 			player.clear = function ()
@@ -217,7 +216,7 @@ game =
 				game.draw = draw;
 			}
 
-			player.keyup = function (event)
+			player.keydown = function (event)
 			{
 				switch (event.keyCode)
 				{
@@ -226,68 +225,54 @@ game =
 					case 39: player.move.right (); break;
 					case 40: player.move.down (); break;
 				}
+				player.move.behind ();
 			}
 
 			player.move =
 			{
-				down: function ()
+				behind: function ()
 				{
 					for (let id in game.object)
 					{
 						let o = game.object[id];
 						if (o.type == 'decor')
-						{console.log ('d');
-							o.clear ();
-							player.Y -= 0.25 * player.h;
-							o.y -= 0.25 * player.h;
-							o.draw ();
+						{
+							if ((Math.abs (o.y - player.y) < 0.5 * player.h) && (Math.abs (o.x - player.x) < 0.5 * player.w))
+							{
+								o.clear ();
+								o.z = (o.y < player.y) ? 0 : 2;
+								o.draw ();
+							}
 						}
 					}
+				},
+
+				down: function ()
+				{
+					player.clear ();
+					player.y += player.s * player.h;
+					player.draw ();
 				},
 
 				left: function ()
 				{
-					for (let id in game.object)
-					{
-						let o = game.object[id];
-						if (o.type == 'decor')
-						{console.log ('d');
-							o.clear ();
-							player.X -= 0.25 * player.w;
-							o.x += 0.25 * player.w;
-							o.draw ();
-						}
-					}
+					player.clear ();
+					player.x -= player.s * player.w;
+					player.draw ();
 				},
 
 				right: function ()
 				{
-					for (let id in game.object)
-					{
-						let o = game.object[id];
-						if (o.type == 'decor')
-						{console.log ('d');
-							o.clear ();
-							player.X += 0.25 * player.w;
-							o.x -= 0.25 * player.w;
-							o.draw ();
-						}
-					}
+					player.clear ();
+					player.x += player.s * player.w;
+					player.draw ();
 				},
 
 				top: function ()
 				{
-					for (let id in game.object)
-					{
-						let o = game.object[id];
-						if (o.type == 'decor')
-						{console.log ('d');
-							o.clear ();
-							player.Y += 0.25 * player.h;
-							o.y += 0.25 * player.h;
-							o.draw ();
-						}
-					}
+					player.clear ();
+					player.y -= player.s * player.h;
+					player.draw ();
 				}
 			}
 
@@ -319,6 +304,7 @@ game =
 
 			unit.clear = function ()
 			{
+				if (game.draws[unit.z]) if (game.draws[unit.z]['unit' + unit.id]) delete game.draws[unit.z]['unit' + unit.id];
 				let o = game.get.metric (unit);
 				game.canvas.context.clearRect (o.x, o.y, o.w, o.h);
 			}
@@ -332,8 +318,7 @@ game =
 			{
 				let draw = {};
 				draw.id = 'unit' + unit.id;
-				console.log (game.object.player.Y);
-				draw.z = (unit.y > game.object.player.y) ? game.object.player.z + 1 : game.object.player.z - 1;
+				draw.z = unit.z;
 
 				draw.draw = function ()
 				{
@@ -539,7 +524,7 @@ game =
 	{
 		load: function ()
 		{
-			window.onkeyup = game.update;
+			window.onkeydown = game.update;
 			window.onload = game.update;
 			window.onmousedown = game.update;
 			window.onmousemove = game.update;
@@ -612,9 +597,7 @@ game.run = function ()
 			i: game.image.tester,
 			wk: 0.5,
 			x: 0.5,
-			xk: 0.5,
 			y: 0.5,
-			yk: 0.5,
 			z: 1
 		}
 
