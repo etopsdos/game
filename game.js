@@ -599,7 +599,7 @@ game.run = function ()
 			z: 1
 		}
 
-		for (let i = 100; i--;)
+		for (let i = 10; i--;)
 		game.create.unit =
 		{
 			h: 0.1,
