@@ -191,7 +191,7 @@ game =
 				draw.draw = function ()
 				{
 					let context = game.canvas.context;
-						context.globalCompositeOperation = 'source-over';
+						context.globalCompositeOperation = 'multiply';
 						context.imageSmoothingEnabled = false;
 					let o = game.get.metric (player);
 
@@ -323,7 +323,7 @@ game =
 				draw.draw = function ()
 				{
 					let context = game.canvas.context;
-						context.globalCompositeOperation = 'source-over';
+						context.globalCompositeOperation = 'multiply';
 						context.imageSmoothingEnabled = false;
 					let o = game.get.metric (unit);
 
