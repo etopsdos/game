@@ -170,7 +170,9 @@ game =
 			player.h = p.h || 0.1;
 			player.i = p.i || game.image.tester;
 			player.id = 'player';
-			player.s = 0.1;
+			player.s = 0.05;
+			player.sa = 0.01;
+			player.sd = 0.1;
 			player.w = p.w || 0.1;
 			player.x = p.x || game.random ();
 			player.y = p.y || game.random ();
@@ -217,14 +219,20 @@ game =
 
 			player.keydown = function (event)
 			{
+				player.s = (player.s < player.sd * 2) ? player.s + player.sa : player.s;
 				switch (event.keyCode)
 				{
-					case 37: player.move.left (); break;
+					case 37: player.move.left (); player.i = game.image.girl2; break;
 					case 38: player.move.top (); break;
-					case 39: player.move.right (); break;
+					case 39: player.move.right (); player.i = game.image.tester; break;
 					case 40: player.move.down (); break;
 				}
 				player.move.behind ();
+			}
+
+			player.keyup = function (event)
+			{
+				player.s = player.sd;
 			}
 
 			player.move =
@@ -523,6 +531,7 @@ game =
 		load: function ()
 		{
 			window.onkeydown = game.update;
+			window.onkeyup = game.update;
 			window.onload = game.update;
 			window.onmousedown = game.update;
 			window.onmousemove = game.update;
@@ -562,8 +571,9 @@ window.onload = game.load;
 
 game.set.load.image =
 {
+	girl2: 'data/girl2.png',
 	back: 'data/back.png',
-	tester: 'data/tester.png',
+	tester: 'data/girl.png',
 	tree: 'data/tree.png'
 }
 
@@ -591,9 +601,9 @@ game.run = function ()
 
 		game.create.player =
 		{
-			h: 0.1,
+			h: 0.15,
 			i: game.image.tester,
-			wk: 0.5,
+			wk: 0.3,
 			x: 0.5,
 			y: 0.5,
 			z: 1
@@ -602,7 +612,7 @@ game.run = function ()
 		for (let i = 10; i--;)
 		game.create.unit =
 		{
-			h: 0.1,
+			h: 0.15,
 			i: game.image.tree,
 			type: 'decor',
 			wk: 0.5
